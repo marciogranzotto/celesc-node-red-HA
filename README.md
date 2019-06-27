@@ -55,11 +55,11 @@ You need to create two MQTT sensors, one for the first `<150 kWh` rate, and anot
 sensor:
   - platform: mqtt
     state_topic: "home/power/cost1"
-    name: "Power Cost < 150kWh"
+    name: "Power Cost less 150kWh"
     unit_of_measurement: "R$"
   - platform: mqtt
     state_topic: "home/power/cost2"
-    name: "Power Cost > 150kWh"
+    name: "Power Cost more 150kWh"
     unit_of_measurement: "R$"
 ```
 
@@ -72,9 +72,9 @@ sensor:
       power_rate:
         friendly_name: "Power Rate"
         unit_of_measurement: 'R$'
-        value_template: "{{states('sensor.power_cost_150kwh')|float if states('sensor.power_meter_energy_total')|float < 150 else states('sensor.power_cost_150kwh_2')|float}}"
+        value_template: "{{states('sensor.power_cost_less_150kwh')|float if states('sensor.power_meter_energy_total')|float < 150 else states('sensor.power_cost_less_150kwh')|float}}"
       total_power_cost:
         friendly_name: "Power Cost"
         unit_of_measurement: 'R$'
-        value_template: "{% if states('sensor.power_meter_energy_total')|float < 150 %} {{'%.2f'|format(states('sensor.power_meter_energy_total')|float * states('sensor.power_cost_150kwh')|float)}} {%- else -%} {{'%.2f'|format((150 * states('sensor.power_cost_150kwh')|float) + ((states('sensor.power_meter_energy_total')|float) - 150 * states('sensor.power_cost_150kwh_2')|float))}}{%- endif %}"
+        value_template: "{% if states('sensor.power_meter_energy_total')|float < 150 %} {{'%.2f'|format(states('sensor.power_meter_energy_total')|float * states('sensor.power_cost_less_150kwh')|float)}} {%- else -%} {{'%.2f'|format((150 * states('sensor.power_cost_less_150kwh')|float) + ((states('sensor.power_meter_energy_total')|float) - 150 * states('sensor.power_cost_more_150kwh')|float))}}{%- endif %}"
 ```
