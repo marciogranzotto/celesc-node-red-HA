@@ -72,7 +72,7 @@ sensor:
       power_rate:
         friendly_name: "Power Rate"
         unit_of_measurement: 'R$'
-        value_template: "{{states('sensor.power_cost_less_150kwh')|float if states('sensor.power_meter_energy_total')|float < 150 else states('sensor.power_cost_less_150kwh')|float}}"
+        value_template: "{{states('sensor.power_cost_less_150kwh')|float if states('sensor.power_meter_energy_total')|float < 150 else states('sensor.power_cost_more_150kwh')|float}}"
       total_power_cost:
         friendly_name: "Power Cost"
         unit_of_measurement: 'R$'
