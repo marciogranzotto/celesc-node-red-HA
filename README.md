@@ -72,9 +72,25 @@ sensor:
       power_rate:
         friendly_name: "Power Rate"
         unit_of_measurement: 'R$'
-        value_template: "{{states('sensor.power_cost_less_150kwh')|float if states('sensor.power_meter_energy_total')|float < 150 else states('sensor.power_cost_more_150kwh')|float}}"
+        value_template: >
+          {% set energy = states('sensor.power_meter_energy_total') | float(default=-1) %}
+          {% if energy != -1 %}
+            {{states('sensor.power_cost_less_150kwh')|float if energy < 150 else states('sensor.power_cost_more_150kwh')|float}}
+          {% else %}
+            {{ states('sensor.power_rate') }}
+          {% endif %}
       total_power_cost:
         friendly_name: "Power Cost"
         unit_of_measurement: 'R$'
-        value_template: "{% if states('sensor.power_meter_energy_total')|float < 150 %} {{'%.2f'|format(states('sensor.power_meter_energy_total')|float * states('sensor.power_cost_less_150kwh')|float)}} {%- else -%} {{'%.2f'|format((150 * states('sensor.power_cost_less_150kwh')|float) + ((states('sensor.power_meter_energy_total')|float) - 150 * states('sensor.power_cost_more_150kwh')|float))}}{%- endif %}"
+        value_template: >
+          {% set energy = states('sensor.power_meter_energy_total') | float(default=-1) %}
+          {% if energy != -1 %}
+            {% if energy < 150 %} 
+                {{'%.2f'|format(energy * states('sensor.power_cost_less_150kwh')|float)}}
+              {%- else -%} 
+                {{'%.2f'|format((150 * states('sensor.power_cost_less_150kwh')|float) + (energy - 150 * states('sensor.power_cost_more_150kwh')|float))}}
+              {%- endif %}
+          {% else %}
+            {{ states('sensor.total_power_cost') }}
+          {% endif %}
 ```
