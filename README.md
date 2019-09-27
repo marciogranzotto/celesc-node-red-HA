@@ -8,7 +8,7 @@ The formula to get the current price for a kWh is:
 (baseRate+flagRate)/((100-(pis+confins+icms))/100)
 ```
 let's break that up:
-- `baseRate` is a fixed value for your home that only changes in Augost. Mine is `R$0.46978`. You can check yours [HERE](https://www.celesc.com.br/tarifas-de-energia#tarifas-vigentes)
+- `baseRate` is a fixed value for your home that only changes in August. Mine is `R$0.46978`. You can check yours [HERE](https://www.celesc.com.br/tarifas-de-energia#tarifas-vigentes)
 - `flagRate` is the rate of the current Flag. That changes every month. You can read more [HERE](http://www.aneel.gov.br/bandeiras-tarifarias)
 - `pis` and `confins` are tributes that change every month
 - `icms` is 12% for the first 150kWh and 25% for any consumption after that
