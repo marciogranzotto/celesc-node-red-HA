@@ -8,10 +8,10 @@ The formula to get the current price for a kWh is:
 (baseRate+flagRate)/((100-(pis+confins+icms))/100)
 ```
 let's break that up:
-- `baseRate` is a fixed value for your home that only changes in August. Mine is `R$0.46978`. You can check yours [HERE](https://www.celesc.com.br/tarifas-de-energia#tarifas-vigentes)
+- `baseRate` is a fixed value for your home that only changes in August. Mine is `R$0.46978`. You can check yours [HERE](https://www.celesc.com.br/tarifas-de-energia#tarifas-vigentes). You will need to enter this value manually
 - `flagRate` is the rate of the current Flag. That changes every month. You can read more [HERE](http://www.aneel.gov.br/bandeiras-tarifarias)
 - `pis` and `confins` are tributes that change every month
-- `icms` is 12% for the first 150kWh and 25% for any consumption after that
+- `icms` is fixed at 12% for the first 150kWh and 25% for any consumption after that
 
 ## Node-RED
 
@@ -42,6 +42,7 @@ functionGlobalContext: {
 That will allow to use `require` inside a Function node to get `xmldom` and `moment`.
 
 After that just need to import [THIS FLOW](flow.json) on Node-RED and change your broker settings.
+On Node-RED, use the menu on the top right of the screen, then `Import` > `Clipboard` and paste it.
 
 ![flow](flow.png)
 
@@ -69,6 +70,9 @@ sensor:
 Assuming that you have a energy sensor called `sensor.power_meter_energy_total`, this two template sensors track the current power rate and the total cost.
 
 ```yaml
+##### COST #####
+# if (energy < 150kWh) cost = energy * rate1
+# if (energy > 150kWh) cost = (150 * rate1) + (energy - 150) * rate2
 sensor:
   - platform: template
     sensors:
@@ -97,3 +101,27 @@ sensor:
             {{ states('sensor.total_power_cost') }}
           {% endif %}
 ```
+
+## Extras
+
+If you want to keep track of all values needed to calculate the power rate, add these sensors too:
+```yaml
+##### CELESC ######
+sensor:
+  - platform: mqtt
+    name: Power Tax PIS
+    unit_of_measurement: '%'
+    state_topic: "home/power/pis"
+  - platform: mqtt
+    name: Power Tax CONFINS
+    unit_of_measurement: '%'
+    state_topic: "home/power/confins"
+  - platform: mqtt
+    name: Power Flag Value
+    unit_of_measurement: 'R$'
+    state_topic: "home/power/flag"
+```
+
+### Reseting the power meter
+
+If you also want to automate reseting the total energy meter, check out [THIS TUTORIAL](ResetingEnergyTotal.md)
